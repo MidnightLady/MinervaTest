@@ -1,0 +1,70 @@
+{% extends "../base.html" %}
+{% block title %}  Product View   {% endblock %}
+
+{% block head %}  
+<script>
+
+ </script>
+ {% endblock %}
+
+ {% block content %}
+
+<div id="main" class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title" > Customer List </h1>
+  </div>
+  <div class="panel-body">
+
+<table class="table">
+              <thead>
+                <tr>
+                 <th> Customer Id</th>
+                  <th> Name</th>
+                  <th> Segment </th>
+                  <th> Country </th>
+                  <th> City </th>
+                   <th> State </th>
+                    <th>Post code </th>
+                </tr>
+              </thead>
+              <tbody>
+
+              
+        {% for cus in cusList %}
+        <tr>
+            <td>{{ cus.cusid }}</td>
+            <td>{{ cus.name }}</td>
+            <td>
+                {% if cus.segment == 1 %}
+                  Consumer
+                {% elif cus.segment == 2 %}
+                  Corporate
+                {% else %}
+                  Home Office
+                {% endif %}
+            </td>
+            <td>{{ cus.country }}</td>
+            <td>{{ cus.city }}</td>
+            <td>{{ cus.state }}</td>
+            <td>{{ cus.postcode }}</td>
+           <td>
+  
+    </td>
+          
+        </tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+    
+  </table>
+
+</div>
+</div>
+
+
+
+{% endblock %}

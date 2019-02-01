@@ -1,0 +1,15 @@
+#main{
+	margin: 0 auto;
+	margin-top: 0%;
+	width: 60%;
+
+}
+
+.input-sm {
+    width: 100px !important;
+}
+
+
+.navbar-collapse{
+	position: relative !important;
+}

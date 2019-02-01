@@ -1,0 +1,252 @@
+{% extends "../base.html" %}
+
+
+
+{% block title %} Create Order {% endblock %}
+
+{% block head %}
+<script src="/static/cities.js"></script>
+<script src="/static/states.js"></script>
+<script>
+$(document).ready(function() {
+    
+    
+    $('.selectpicker').selectpicker('show');
+
+    $.each(states.states, function(a,b){
+        $('#state').append($('<option/>', { 
+            value: b.id,
+            text : b.name 
+        }));
+    })
+    $('#state').selectpicker('refresh');
+ 
+    $("input").on("keyup", function(){
+
+        var v = $(this).val();
+
+    })
+
+    objectifyForm =function(array) {
+     var returnArray = Array();
+     for (var i = 0; i < array.length; i++){
+       returnArray.push(array[i]['value']);
+     }
+     return returnArray;
+    }
+
+    $(".pro-add-button").click(function(event) {
+        event.preventDefault();
+        var num = $(".quantity").val().trim();
+        var product = $(".product").val();
+        if ( num.length == 0 || !Number.isInteger(Number(num)) || num < 0 ){
+          $(".quantity").popover({ content : "Must enter valid quantity", placement: "bottom"});
+          $(".quantity").popover('show');
+        } else if ( product.length == 0 ){
+          $(".product").popover('destroy');
+          $(".product").popover({ content : "choose 1 product", placement: "bottom"});
+          $(".product").popover('show');
+        } else {
+            var text = $('.product option:selected').text() + " Quantity: " +num
+            $('<div class="form-group"><span class="col-sm-7 control-label">'+ text +'</span></div>').appendTo($("#productList"));
+            $('<input type="hidden" name="pro_list[]" value="'+product+'" >').appendTo($("#productList"));
+            $('<input type="hidden" name="quan_list[]" value="'+num+'" >').appendTo($("#productList"));
+        }
+    });
+
+
+
+    changeCity = function(){
+        var state_id = $('#state').val();
+        $('#city').find('option').remove();
+        $.each(cities.cities, function(a,b){
+            if(b.state_id == state_id){
+                $('#city').append($('<option/>', { 
+                    value: b.id,
+                    text : b.name 
+                }));
+            }
+        })   
+        $('#city').selectpicker('refresh');
+    }
+
+});
+    validateForm = function(event){
+        event.preventDefault();
+        var lastname = $("#lastname").val().trim();
+        var firstname = $("#firstname").val().trim();
+        var state = $("#state").val().trim();
+        var city = $("#city option:selected").text();
+        var postcode = $("#postcode").val().trim();
+        var product = $('[name="pro_list[]"]').serializeArray();
+        var quantity = $('[name="quan_list[]"]').serializeArray();
+        var segment = $('.segment').val();
+        var ship = $('.ship').val();
+        var stateName = $("#state option:selected").text();
+        
+
+        if ( lastname.length == 0 ){
+          $("#lastname").popover({ content : "Must enter last name", placement: "bottom"});
+          $("#lastname").popover('show');
+        } else if ( firstname.length == 0 ){
+          $("#firstname").popover({ content : "Must enter first name", placement: "bottom"});
+          $("#firstname").popover('show');
+        } else if ( state.length == 0 ){
+          $("#state").popover({ content : "Must choose state", placement: "bottom"});
+          $("#state").popover('show');
+        } else if ( postcode.length == 0 || !Number.isInteger(Number(postcode)) || postcode < 0 ){
+          $("#postcode").popover({ content : "Post code in valid", placement: "bottom"});
+          $("#postcode").popover('show');
+        } else if ( product.length == 0 ){
+          $(".product").popover('destroy');
+          $(".product").popover({ content : "Add at least 1 product!", placement: "top"});
+          $(".product").popover('show');
+        } else if ( segment.length == 0 ){
+          $(".segment").popover({ content : "Must choose segment", placement: "bottom"});
+          $(".segment").popover('show');
+        } else if ( ship.length == 0 ){
+          $(".ship").popover({ content : "Must choose ship mode", placement: "bottom"});
+          $(".ship").popover('show');
+        }
+        else {
+            $.post("{% url 'create_order' %}", {'lastname': lastname, 'firstname': firstname, 'country': $('#country').val(), 
+            'state': stateName, 'city':city, 'postcode':postcode, 'pro_list':objectifyForm(product), 
+            'quan_list':objectifyForm(quantity), 'segment':segment, 'ship': ship
+            }, function(){
+                location.reload(true);
+            });
+        }
+    }
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div id="main" class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title" >Create Order</h1>
+  </div>
+  <div class="panel-body">
+
+    {% if error != "" %}
+
+     <div class="alert alert-danger" role="alert"> {{ error }} </div>
+
+    {% endif %}
+
+<form action="" method="" class="form-horizontal" role="form">
+
+    <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">Last name: </label>
+    <div class="col-sm-10">
+        <input class="form-control" id="lastname" type="text" name="lastname" maxlength="50"
+        data-toggle="popover" 
+        >
+    </div>
+    </div>
+
+    <div class="form-group">
+    <label for="firstname" class="col-sm-2 control-label">First name: </label>
+    <div class="col-sm-10">
+        <input class="form-control" id="firstname" type="text" name="firstname" maxlength="50"
+        data-toggle="popover" 
+        >
+    </div>
+    </div>   
+
+    <div class="form-group">    
+    <label for="country" class="col-sm-2 control-label">Country: </label>
+    <div class="col-sm-10">
+    <select class="selectpicker form-control" name="country" id="country">
+        <option value="United States">United States</option>
+    </select>
+    </div>
+    </div>
+
+    <div class="form-group">
+    <label for="state" class="col-sm-2 control-label">State: </label>
+    <div class="col-sm-10">
+    <select class="selectpicker form-control" id="state" name="state" onChange="changeCity()" data-toggle="popover" >
+        <option value="" selected>select state...</option>
+    </select>
+    </div>
+    </div>
+
+    <div class="form-group">
+    <label for="city" class="col-sm-2 control-label">City: </label>
+    <div class="col-sm-10">
+    <select class="selectpicker form-control" id="city" name="city" >
+        <option value="" selected>select city...</option>
+    </select>
+    </div>
+    </div>
+
+    <div class="form-group">
+    <label for="postCode" class="col-sm-2 control-label">Postal Code: </label>
+    <div class="col-sm-10">
+    <input class="form-control" id="postcode" type="text" name="postcode" maxlength="6">
+    </div>
+    </div>
+
+    <div class="form-group">
+
+    <label for="prolist" class="col-sm-2 control-label">Product List: </label>
+    <div class="col-sm-10 input-group">    
+    <span class="input-group-btn">
+     <button class="btn  btn-default pro-add-button"><span class="glyphicon glyphicon-plus"></span> Add</button>
+     </span>
+    <select class="form-control product" id="prolist">
+        <option value="" selected >choose product... </option>
+        {% for product in productList %}
+        <option value="{{ product.id }}">{{ product.name }}  ${{ product.price }}</option>
+        {% endfor %}
+    </select>
+    <input type="number" class="form-control quantity" placeholder="enter quantity...">
+    </div>
+    </div>
+
+    <div class="form-group" id="productList">
+    </div>
+
+
+    <div class="form-group">    
+    <label for="segment" class="col-sm-2 control-label">segment: </label>
+    <div class="col-sm-10">
+    <select class="form-control segment" name="segment" >
+        <option value="">choose segment...</option>
+        <option value="1">Consumer</option>
+        <option value="2">Corporate</option>
+        <option value="3">Home Office</option>
+    </select>
+    </div>
+    </div>
+
+    <div class="form-group">    
+    <label for="ship" class="col-sm-2 control-label">Ship Mode: </label>
+    <div class="col-sm-10">
+    <select class="form-control ship" name="ship" >
+        <option value="">choose ship mode...</option>
+        <option value="1">Same day</option>
+        <option value="2">First class</option>
+        <option value="3">Second class</option>
+        <option value="4">Standard Class</option>
+    </select>
+    </div>
+    </div>
+
+ <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+    <button class="btn btn-primary"  type="button" onClick="validateForm(event)" > Submit</button>
+    </div>
+   </div>
+
+</form>
+
+</div>
+
+</div>
+
+
+{% endblock %}

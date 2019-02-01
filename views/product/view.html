@@ -1,0 +1,129 @@
+{% extends "../base.html" %}
+{% block title %}  Product View   {% endblock %}
+
+{% block head %}  
+<script>
+$(document).ready(function() {
+
+  $('.check-pattern').on('keydown', function(e){
+    var input = $(this);
+    var oldVal = input.val();
+    var regex = new RegExp(input.attr('pattern'), 'g');
+
+    setTimeout(function(){
+      var newVal = input.val();
+      if(!regex.test(newVal)){
+        input.val(oldVal); 
+      }
+    }, 0);
+  });
+
+
+   $(".pro-delete").click(function(event) {  
+      var pro_id = $(this).find('input').val();
+      $.post("{% url 'product_delete' %}", {'pro_id': pro_id}, function(){
+         location.reload(true);
+      });
+  });
+
+
+  $(".pro-add-button").click(function(event) {
+    
+    var cat = $(".pro-cat").val().trim();
+    var name = $(".pro-name").val().trim();
+    var price = $(".pro-price").val().trim();
+    var discount = $(".pro-discount").val().trim();
+
+    if ( name.length == 0 ){
+      $(".pro-name").popover({ content : "Must enter product name", placement: "bottom"});
+      $(".pro-name").popover('show');
+    } else if ( cat.length == 0 ){
+      $(".pro-cat").popover({ content : "Must choose category", placement: "bottom"});
+      $(".pro-cat").popover('show');
+    } else if ( price.length == 0 || !$.isNumeric(price) ){
+      $(".pro-price").popover({ content : "price must is number", placement: "bottom"});
+      $(".pro-price").popover('show');
+    } else if ( discount.length == 0 || !$.isNumeric(discount) || (discount >= 100) ){
+      $(".pro-discount").popover({ content : "discount must less than 100", placement: "bottom"});
+      $(".pro-discount").popover('show');
+    }else {
+         $.post("{% url 'product_create' %}", {'cat': cat, 'name': name, 'price': price, 'discount': discount}, function(){
+           location.reload(true);
+        });
+     }
+  });
+});
+ </script>
+ {% endblock %}
+
+ {% block content %}
+
+<div id="main" class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title" > Category List </h1>
+  </div>
+  <div class="panel-body">
+ <div class="input-group">
+                <span class="input-group-btn">
+
+                 <button class="btn  btn-default pro-add-button"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                 </span>
+                <select class="selectpicker form-control pro-cat" name="table"  >
+                    <option value="" selected >choose one category... </option>
+                    {% for cat in subCatList %}
+                    <option value="{{ cat.id }}">{{ cat.name }} </option>
+                    {% endfor %}
+
+                </select>
+                <input type="text" class="form-control pro-name" placeholder="enter product name...">
+                <input type="number" pattern="^\d+(?:\.\d{1,2})?$" class="form-control pro-price check-pattern" placeholder="enter price...">
+                <input type="number" pattern="^\d+(?:\.\d{1,2})?$" class="form-control pro-discount check-pattern" placeholder="enter discount...">
+
+  </div>
+
+<table class="table">
+              <thead>
+                <tr>
+                 <th> Product Id</th>
+                  <th> Name</th>
+                  <th> Category </th>
+                  <th> Price</th>
+                   <th> Discount</th>
+                    <th>Manage</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              
+        {% for pro in proList %}
+        <tr>
+            <td>{{ pro.productid }}</td>
+            <td>{{ pro.name }}</td>
+            <td>{{ pro.catid.name }}</td>
+            <td>{{ pro.price }}</td>
+            <td>{{ pro.discount }}</td>
+
+           <td>
+    <button class="btn btn-xs btn-default pro-delete">
+      <input type="hidden" value ="{{ pro.id }}">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    </td>
+          
+        </tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+    
+  </table>
+
+</div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,22 @@
+
+<!-- header -->
+
+<div class="navbar navbar-default navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+           
+            <a class="navbar-brand" href="/">Menu</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li {% if page_active == 1%}{{ 'class=active' }}{% endif %} ><a href="{% url 'create' %}">Create Order</a></li>
+                <li {% if page_active == 2%}{{ 'class=active' }}{% endif %}><a href="{% url 'order' %}">Order List</a></li>
+                <li {% if page_active == 3%}{{ 'class=active' }}{% endif %}><a href="{% url 'customer' %}">Customer</a></li>
+                <li {% if page_active == 4%}{{ 'class=active' }}{% endif %}><a href="{% url 'product' %}">Product</a></li>
+                 <li {% if page_active == 5%}{{ 'class=active' }}{% endif %}><a href="{% url 'category_list' %}">Category</a></li>
+              
+            </ul>
+
+        </div>
+    </div>
+</div>

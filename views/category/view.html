@@ -1,0 +1,105 @@
+{% extends "../base.html" %}
+{% block title %}  Category View   {% endblock %}
+
+{% block head %}  
+<script>
+$(document).ready(function() {
+
+   $(".cat-delete").click(function(event) {  
+      var cat_id = $(this).find('input').val();
+      console.log(cat_id);
+         
+      $.post("{% url 'category_delete' %}", {'cat_id': cat_id}, function(){
+         location.reload();
+      });
+  });
+
+
+  $(".cat-add-button").click(function(event) {
+    
+    var cat_name = $(".cat-name").val().trim();
+    var cat_main = $(".cat-main").val().trim();
+
+    if (cat_name.length == 0  ){
+      $(".cat-name").popover({ content : "Must enter category name", placement: "bottom"});
+      $(".cat-name").popover('show');
+    } else if (cat_main.length == 0){
+      $(".cat-main").popover({ content : "Must choose 1 main-category", placement: "bottom"});
+      $(".cat-main").popover('show');
+
+    }else {
+         $.post("{% url 'category_create' %}", {'cat_name': cat_name, 'cat_main': cat_main}, function(){
+           location.reload();
+        });
+     }
+  });
+});
+ </script>
+ {% endblock %}
+
+ {% block content %}
+
+<div id="main" class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title" > Category List </h1>
+  </div>
+  <div class="panel-body">
+ <div class="input-group">
+                <span class="input-group-btn">
+
+                 <button class="btn  btn-default cat-add-button"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                 </span>
+                <select class="selectpicker form-control cat-main" name="table"  >
+                    <option value="" selected >choose one category... </option>
+                    {% for cat in catList %}
+                    <option value="{{ cat.id }}">{{ cat.name }} </option>
+                    {% endfor %}
+
+                </select>
+                <input type="text" class="form-control cat-name" placeholder="enter category name...">
+
+  </div>
+
+<table class="table">
+              <thead>
+                <tr>
+                 
+                  <th> Name</th>
+
+                  <th> Price</th>
+                    <th>Manage</th>
+                </tr>
+              </thead>
+              <tbody>
+
+				    	
+				{% for cat in subCatList %}
+				<tr>
+         
+            <td>{{ cat.catid.name }}</td>
+            <td>{{ cat.name }}</td>
+
+           <td>
+    <button class="btn btn-xs btn-default cat-delete">
+      <input type="hidden" value ="{{ cat.id }}">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    </td>
+				  
+				</tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+    
+  </table>
+
+</div>
+</div>
+
+
+
+{% endblock %}

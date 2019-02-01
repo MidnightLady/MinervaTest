@@ -1,0 +1,71 @@
+{% extends "../base.html" %}
+{% block title %}  Product View   {% endblock %}
+
+{% block head %}  
+<script>
+
+ </script>
+ {% endblock %}
+
+ {% block content %}
+
+<div id="main" class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title" > Customer List </h1>
+  </div>
+  <div class="panel-body">
+
+<table class="table">
+              <thead>
+                <tr>
+                 <th> Order Id</th>
+                  <th> Order Date</th>
+                  <th> Ship Date </th>
+                  <th> Ship Mode </th>
+                  <th> Cust Id </th>
+                   <th> Product Id </th>
+                    <th> Quantity </th>
+                </tr>
+              </thead>
+              <tbody>
+
+              
+        {% for order in orderList %}
+        <tr>
+            <td>{{ order.orderid }}</td>
+            <td>{{ order.orderdate|date:"Y-m-d" }}</td>
+            <td>{{ order.shipdate|date:"Y-m-d" }}</td>
+            <td>
+                {% if order.shipId == 1 %}
+                  Same day
+                {% elif order.shipId == 2 %}
+                  First class
+                {% elif order.shipId == 3 %}
+                  Second class
+                {% else %}
+                  Standard Class
+                {% endif %}
+            </td>
+            <td>{{ order.cusid.name }}</td>
+            <td>{{ order.productid.productid }}</td>
+            <td>{{ order.quantity }}</td>
+           <td>
+    </td>
+          
+        </tr>
+
+
+        {% endfor %}
+
+
+    </tbody>
+
+    
+  </table>
+
+</div>
+</div>
+
+
+
+{% endblock %}
